@@ -1,5 +1,10 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+
+interface Item {
+  id: string;
+  title: string; 
+}
 
 const MarginWrapper = ({children}: {children: React.ReactNode}) => (
   <View style={{ margin: 4 }}>
@@ -27,8 +32,8 @@ const Task = ({title, onButtonPress}: {title: string, onButtonPress: () => void}
 
 export default function App() {
   const [currentTask, setCurrentTask] = useState('');
-  const [tasks, setTasks] = useState<{title: string; id: string;}[]>([]);
-  const handleOnButtonPress = ({title: titleToRemove}: {title: string; id: string;}) => {
+  const [tasks, setTasks] = useState<Item[]>([]);
+  const handleOnButtonPress = ({title: titleToRemove}: Item) => {
     const newTasks = tasks.filter(({title}) => title !== titleToRemove);
     setTasks(newTasks);
   }
