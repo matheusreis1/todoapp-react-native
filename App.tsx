@@ -1,11 +1,61 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext, useState } from 'react';
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+
+const MarginWrapper = ({children}: {children: React.ReactNode}) => (
+  <View style={{ margin: 4 }}>
+    {children}
+  </View>
+)
+
+const withMargin = (components: React.ReactNode[]) => components.map((component, index) => 
+  <MarginWrapper key={index}>{component}</MarginWrapper>
+);
+
+const Task = ({title, onButtonPress}: {title: string, onButtonPress: () => void}) => {
+  const components = [
+    <Text>{title}</Text>,
+    <Button title='Done' onPress={onButtonPress} />,
+    <Button title='Remove' onPress={onButtonPress} />
+  ];
+
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {withMargin(components)}
+    </View>
+  );
+}
 
 export default function App() {
+  const [currentTask, setCurrentTask] = useState('');
+  const [tasks, setTasks] = useState<{title: string; id: string;}[]>([]);
+  const handleOnButtonPress = ({title: titleToRemove}: {title: string; id: string;}) => {
+    const newTasks = tasks.filter(({title}) => title !== titleToRemove);
+    setTasks(newTasks);
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TextInput 
+          style={styles.input}
+          placeholder="Enter a task" 
+          value={currentTask}
+          onChangeText={(text) => setCurrentTask(text)} />
+        <Button 
+          title='Add'
+          onPress={() => {
+            const newTask = {title: currentTask, id: currentTask};
+            setTasks([...tasks, newTask])
+            setCurrentTask('');
+          }}
+        />
+      </View>
+
+      <FlatList 
+        data={tasks}
+        renderItem={({item}) => <Task title={item.title} onButtonPress={() => handleOnButtonPress(item)}></Task>}
+        keyExtractor={item => item.id}
+      ></FlatList>      
     </View>
   );
 }
@@ -17,4 +67,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  }
 });
