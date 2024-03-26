@@ -43,6 +43,7 @@ export default function App() {
           onChangeText={(text) => setCurrentTask(text)} />
         <Button 
           title='Add'
+          disabled={!currentTask}
           onPress={() => {
             const newTask = {title: currentTask, id: currentTask};
             setTasks([...tasks, newTask])
